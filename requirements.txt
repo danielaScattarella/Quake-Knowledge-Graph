@@ -1,0 +1,17 @@
+# Core
+qdrant-client==1.6.0
+cohere==5.20.0
+requests
+python-dotenv
+langchain-core
+langchain-text-splitters
+tqdm
+
+# Optional / fallback
+sentence-transformers
+
+# Orchestration
+langgraph
+
+# Web Interface
+streamlit

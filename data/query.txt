@@ -1,0 +1,7 @@
+#EventID|Time|Latitude|Longitude|Depth/Km|Author|Catalog|Contributor|ContributorID|MagType|Magnitude|MagAuthor|EventLocationName|EventType
+41671442|2025-02-11T00:11:53.840000|42.8622|11.751|10.1|SURVEY-INGV||||ML|0.9|--|4 km SW Radicofani (SI)|earthquake
+41671602|2025-02-11T01:29:15.740000|36.9148|14.8333|24.5|SURVEY-INGV||||ML|1.7|--|9 km NE Modica (RG)|earthquake
+41671662|2025-02-11T01:50:01.670000|40.829833|14.140167|1.9|BULLETIN-OV||||Md|1.7|--|Campi Flegrei|earthquake
+41671702|2025-02-11T01:50:10.850000|41.495|14.6298|10.9|SURVEY-INGV||||ML|0.8|--|4 km E Vinchiaturo (CB)|earthquake
+41671762|2025-02-11T01:58:22.970000|42.6602|13.0228|9.7|SURVEY-INGV||||ML|0.3|--|6 km E Monteleone di Spoleto (PG)|earthquake
+41707972|2025-02-16T00:10:32.540000|43.4232|12.8307|13.4|SURVEY-INGV||||ML|0.9|--|3 km SW Sassoferrato (AN)|earthquake
