@@ -1,0 +1,43 @@
+# ============================
+# Python
+# ============================
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+
+# Virtual env
+venv/
+.venv/
+env/
+ENV/
+*.env
+
+# IDE / Editor
+.vscode/
+.idea/
+*.swp
+
+# Logs
+*.log
+logs/
+
+# ============================
+# Vector DB /es
+# ============================
+
+# Qdrant storage
+qdrant_storage/
+qdrant/
+qdrant_data/
+qdrant_index/
+
+
+
+# ============================
+# Build / Output
+# ============================
+dist/
+build/
+.egg-info/
