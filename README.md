@@ -1,13 +1,26 @@
-Un sistema multi‑agente progettato per analizzare i dati sismici dell’INGV in modo intelligente e automatizzato. L’obiettivo principale è permettere a diversi agenti specializzati di collaborare per comprendere dataset di terremoti, elaborarli, arricchirli, generare spiegazioni e report e rispondere a domande sui fenomeni sismici. Il funzionamento parte dal caricamento dei dataset, che sono cataloghi INGV. I file vengono letti, normalizzati e suddivisi in porzioni più piccole, così da poter essere elaborati da modelli linguistici e da un motore di vettorizzazione.
-Il sistema utilizza un servizio di embeddings dedicato ai dati INGV, che trasforma sia i testi sia alcune strutture numeriche rilevanti in rappresentazioni vettoriali. Questo passaggio permette di effettuare ricerche semantiche, confronti tra terremoti simili, interrogazioni naturali sui dati e ragionamenti per similarità. Tutte le informazioni ottenute dai vari strumenti confluiscono in una pipeline coordinata da LangGraph, che gestisce il flusso di lavoro e decide quali agenti devono intervenire in ogni fase.
-Le analisi vengono svolte da un gruppo di sette agenti, ciascuno con un ruolo preciso. Uno di questi si occupa di interpretare la struttura del dataset e capire quali informazioni contiene, un altro genera embeddings e gestisce l’indicizzazione, un altro ancora suggerisce metadati mancanti o inconsistenze nelle informazioni degli eventi. Un agente dedicato si occupa di migliorare le descrizioni testuali, rendendole più chiare dal punto di vista scientifico e comunicativo. È presente anche un revisore che controlla la coerenza e la correttezza dei contenuti. Un agente di domanda‑risposta consente di interrogare liberamente i dati usando il linguaggio naturale, mentre un generatore testuale produce articoli, report tecnici o riassunti dei dataset analizzati.
-A supporto degli agenti ci sono diversi strumenti dedicati: uno per caricare i file nei formati tipici dell’INGV, uno per dividere i testi o i dati in segmenti più gestibili, uno per eseguire analisi strutturali, uno per integrare informazioni provenienti da fonti esterne come altri cataloghi sismologici internazionali, e alcuni tool per testare le prestazioni, la qualità degli embeddings e il funzionamento del database vettoriale. 
-In sintesi, andrò a realizzare un assistente intelligente capace di analizzare dataset di terremoti, comprenderli, arricchirli, rispondere a domande complesse, migliorare la qualità delle informazioni e generare contenuti descrittivi e tecnici, il tutto coordinato da una pipeline multi‑agente progettata appositamente per i dati dell’INGV.
-podman machine init --now --user-mode-networking
-podman machine start
-podman build -t earthquake-agent .
-podman play kube earthquakes.kube.yaml
-podman pod list
-podman logs -f earthquake-system-earthquake-app
-podman pod stop earthquake-system
-podman pod rm earthquake-system
+The system is designed to allow the intelligent, automated analysis of INGV seismic data. The goal is to enable agents to collaborate tra loro by analysing the datasets dei terremoti, processing, and enriching them to generate explanations, reports, and answers to questions about seismic phenomena. Built with LangGraph, integrated with **Cohere LLM**, **MiniLM**, and **Qdrant vector** database.
+
+# Project Objectives
+This system is based on advanced multi-agent architectures:
+
+**Agent Orchestration**: Directed graph execution using LangGraph with persistent state management
+**Multi-Agent Architecture**: Distributed agent design with task-level specialisation and coordination
+**Tool Integration**: Custom toolchain augmenting LLM capabilities with deterministic operations
+**Semantic Search**: Embedding-based similarity matching for contextual data access
+**LLM Integration**: Cohere APIs for generative tasks, structured analysis, and recommendation pipelines
+
+# Quick Start
+## Prerequisites
+Python 3.10+
+API Keys for: Cohere - LLM API
+Podman
+
+**Installation**
+Clone and setup environment:
+
+```bash
+cd quake-knowledge-graph
+python -m venv venv
+venv\Scripts\activate
+```
+
