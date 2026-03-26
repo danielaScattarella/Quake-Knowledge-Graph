@@ -1,5 +1,5 @@
 # Core
-qdrant-client==1.6.0
+qdrant-client>=1.13.0
 cohere==5.20.0
 requests
 python-dotenv

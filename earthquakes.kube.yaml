@@ -12,7 +12,10 @@ spec:
       image: qdrant/qdrant:latest
       ports:
         - containerPort: 6333
+          hostPort: 6333
         - containerPort: 6334
+          hostPort: 6334
+
       env:
         - name: QDRANT_API_KEY
           value: "admin-key"
@@ -65,7 +68,7 @@ spec:
         - name: EMBEDDING_DIM
           value: "384"
         - name: COHERE_API_KEY
-          value: ---ADD KEY---       
+          value: Add-Key      
       volumeMounts:
         - mountPath: /app/data
           name: data-volume

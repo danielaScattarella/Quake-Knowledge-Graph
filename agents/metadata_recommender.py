@@ -128,8 +128,21 @@ def generate_reasoning(summary):
     dmin = summary.get("min_depth")
     dmax = summary.get("max_depth")
 
-    reasoning["magnitude_range"] = f"Magnitude ranges from {mmin} to {mmax}, avg {round(mavg, 2)}."
-    reasoning["depth_range"] = f"Depth ranges from {dmin} km to {dmax} km."
+   
+    mavg_text = f"{round(mavg, 2)}" if mavg is not None else "N/D"
+    mmin_text = mmin if mmin is not None else "N/D"
+    mmax_text = mmax if mmax is not None else "N/D"
+    dmin_text = dmin if dmin is not None else "N/D"
+    dmax_text = dmax if dmax is not None else "N/D"
+
+    reasoning["magnitude_range"] = (
+        f"Magnitude ranges from {mmin_text} to {mmax_text}, avg {mavg_text}."
+    )
+
+    reasoning["depth_range"] = (
+        f"Depth ranges from {dmin_text} km to {dmax_text} km."
+    )
+
     reasoning["classification_basis"] = (
         "Tags and metadata are derived from earthquake intensity, depth category, "
         "and notable locations contained in the dataset."

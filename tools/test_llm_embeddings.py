@@ -41,6 +41,7 @@ def test_embeddings():
 
     response = co.embed(
         model="embed-english-v3.0",
+        input_type="search_document",
         texts=[example_event]
     )
 

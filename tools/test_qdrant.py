@@ -1,7 +1,8 @@
 # tools/test_qdrant_earthquakes.py
 
 from qdrant_client import QdrantClient
-import os
+import os, sys
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 from config.config import QDRANT_COLLECTION
 
@@ -37,9 +38,10 @@ def test_qdrant_connection():
     # Statistiche della collezione
     info = client.get_collection(QDRANT_COLLECTION)
     points = client.count(collection_name=QDRANT_COLLECTION).count
-
+    v = info.config.params.vectors
     print(f"\n🌋 Collezione terremoti: {QDRANT_COLLECTION}")
-    print(f" - Modello vettoriale: {info.vectors}")
+    print(f" - Vector size: {v.size}")
+    print(f" - Distance: {v.distance}")
     print(f" - Punti indicizzati: {points}")
 
     print("\n✅ Test completato.")

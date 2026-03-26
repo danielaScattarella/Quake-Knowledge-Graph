@@ -1,0 +1,51 @@
+{
+  "dataset_analysis": {
+    "mean": 0.022735,
+    "std_dev": 0.011445,
+    "p95": 0.018967,
+    "runs": 5
+  },
+  "dataset_memory": {
+    "current_kb": 7.57,
+    "peak_kb": 1476.1
+  },
+  "embedding_generation": {
+    "mean": 37.52168,
+    "std_dev": 40.557158,
+    "p95": 18.342162,
+    "runs": 5
+  },
+  "metadata": {
+    "mean": 0.00028,
+    "std_dev": 0.000151,
+    "p95": 0.000235,
+    "runs": 5
+  },
+  "content_improver": {
+    "mean": 1.9e-05,
+    "std_dev": 1.2e-05,
+    "p95": 1.5e-05,
+    "runs": 5
+  },
+  "reviewer": {
+    "mean": 0.00615,
+    "std_dev": 0.001384,
+    "p95": 0.006165,
+    "runs": 5
+  },
+  "vector_search": {
+    "mean": 3.306158,
+    "std_dev": 0.275423,
+    "p95": 3.577815,
+    "runs": 5
+  },
+  "embedding_memory": {
+    "current_kb": 4245.51,
+    "peak_kb": 10336.58
+  },
+  "scalability": {
+    "max_repository_size": "500 MB (tested)",
+    "concurrent_repos": "5–10",
+    "batch_processing": "32–64 documents/batch"
+  }
+}

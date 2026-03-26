@@ -20,15 +20,15 @@ def improve(dataset_summary: dict, metadata: dict) -> dict:
 
     # Testo migliorato — sintetico e tecnico
     improved_text = (
-        f"Il dataset contiene {total} eventi sismici analizzati. "
-        f"La magnitudo varia da {min_mag} a {max_mag} "
-        f"con una media di {round(avg_mag, 2) if avg_mag else 'N/D'}. "
-        f"La profondità ipocentrale varia da {min_depth} a {max_depth} km "
-        f"(media: {round(avg_depth, 2) if avg_depth else 'N/D'} km). "
-        f"Sono stati rilevati eventi localizzati in diverse aree, "
-        f"con distribuzione spaziale e dei parametri coerente con la micro-sismicità tipica regionale."
+        f"The dataset contains {total} analyzed seismic events. "
+        f"Earthquake magnitudes range from {min_mag} to {max_mag}, "
+        f"with an average value of {round(avg_mag, 2) if avg_mag else 'N/A'}. "
+        f"Hypocentral depths span from {min_depth} to {max_depth} km "
+        f"(average: {round(avg_depth, 2) if avg_depth else 'N/A'} km). "
+        f"The recorded events are distributed across multiple areas, "
+        f"showing spatial patterns and parameter variability consistent "
+        f"with typical regional micro‑seismic activity."
     )
-
     return {
         "improved_text": improved_text,
         "metadata_used": metadata,
