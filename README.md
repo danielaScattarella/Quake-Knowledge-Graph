@@ -303,9 +303,6 @@ podman build -t earthquake-agent .
 podman play kube earthquakes.kube.yaml
 ```
 
-## License
-The repository were created with the support of Microsoft Copilot. The author, Rosaria Daniela Scattarella, transfers to Engineering Ingegneria Informatica S.p.A. all economic rights relating to such contents, including reproduction, modification, distribution, and commercial use. © 2026 Engineering Ingegneria Informatica S.p.A. – All rights reserved.
-
 ## Acknowledgments
 Built with:
 
