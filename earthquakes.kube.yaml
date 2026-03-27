@@ -68,7 +68,7 @@ spec:
         - name: EMBEDDING_DIM
           value: "384"
         - name: COHERE_API_KEY
-          value: "ZovZV6NTBgRLtjfXMCYCUnkLTZ4P9yM5ddDHBJuo"      
+          value: ---ADD key---      
       volumeMounts:
         - mountPath: /app/data
           name: data-volume
