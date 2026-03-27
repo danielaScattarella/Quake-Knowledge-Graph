@@ -3,15 +3,11 @@
 import os
 import uuid
 from qdrant_client.models import VectorParams, Distance, PointStruct
+from qdrant_client import models
 from config.config import qdrant, QDRANT_COLLECTION, EMBEDDING_DIM
 
 
 class EarthquakeEmbeddingAgent:
-    """
-    Embedding agent specifico INGV.
-    - Converte eventi sismici in embeddings semantici
-    - Indicizza in Qdrant con batching sicuro
-    """
 
     def __init__(self):
         self.collection = QDRANT_COLLECTION
@@ -19,39 +15,32 @@ class EarthquakeEmbeddingAgent:
         self._ensure_collection()
 
     def _ensure_collection(self):
-        """Crea la collezione Qdrant se non esiste."""
         try:
             collections = [c.name for c in qdrant.get_collections().collections]
         except Exception:
             collections = []
-
         if self.collection not in collections:
             qdrant.create_collection(
                 collection_name=self.collection,
-                vectors_config=VectorParams(size=self.dim, distance=Distance.COSINE)
+                vectors_config=VectorParams(
+                    size=self.dim,
+                    distance=Distance.COSINE
+                )
             )
 
     # ------------------------------------------------------
-    #     EMBEDDING LOCALE (MiniLM)
+    # Embedding MiniLM
     # ------------------------------------------------------
     def _embed_with_miniLM(self, texts):
-        """
-        Usa MiniLM locale per embedding,
-        perché affidabile e veloce in ambiente offline.
-        """
         from sentence_transformers import SentenceTransformer
         model = SentenceTransformer('all-MiniLM-L6-v2')
         embeddings = model.encode(texts, normalize_embeddings=False)
         return [list(e) for e in embeddings]
 
     # ------------------------------------------------------
-    #     FORMATTAZIONE EVENTO IN TESTO BREVE (IMPORTANTE)
+    # Format event as short text
     # ------------------------------------------------------
     def _format_event_as_text(self, event: dict) -> str:
-        """
-        Trasforma un singolo evento INGV in un testo semantico breve.
-        (NON inserire dataset interi → previene payload giganteschi)
-        """
         return (
             f"Earthquake event. EventID {event.get('EventID')}. "
             f"Time {event.get('Time')}. "
@@ -62,18 +51,10 @@ class EarthquakeEmbeddingAgent:
         )
 
     # ------------------------------------------------------
-    #     ADD EVENTS — CON FIX BATCHING QDRANT
+    # Add events with batching
     # ------------------------------------------------------
     def add_earthquake_events(self, events: list):
-        """
-        Inserisce gli eventi INGV in Qdrant evitando payload troppo grandi.
-        Qdrant ha limite payload JSON: 32MB → usiamo batch piccoli.
-        """
-
-        # 1️⃣ Format text & metadata (tutto conciso)
-        texts = []
-        metadata = []
-
+        texts, metadata = [], []
         for e in events:
             texts.append(self._format_event_as_text(e))
             metadata.append({
@@ -88,17 +69,14 @@ class EarthquakeEmbeddingAgent:
                 "EventType": e.get("EventType"),
             })
 
-        # 2️⃣ Embedding in batch per evitare uso RAM eccessivo
         BATCH_EMB = 200
         BATCH_UPSERT = 200
 
         for i in range(0, len(events), BATCH_EMB):
-            batch_texts = texts[i:i + BATCH_EMB]
-            batch_meta = metadata[i:i + BATCH_EMB]
-
+            batch_texts = texts[i:i+BATCH_EMB]
+            batch_meta = metadata[i:i+BATCH_EMB]
             vectors = self._embed_with_miniLM(batch_texts)
 
-            # Crea i punti
             points = [
                 PointStruct(
                     id=str(uuid.uuid4()),
@@ -108,41 +86,86 @@ class EarthquakeEmbeddingAgent:
                 for vec, txt, meta in zip(vectors, batch_texts, batch_meta)
             ]
 
-            # 3️⃣ UPLOAD QDRANT IN SOTTO-BATCH: FIX 32MB PAYLOAD
             for j in range(0, len(points), BATCH_UPSERT):
-                sub_points = points[j:j + BATCH_UPSERT]
                 qdrant.upsert(
                     collection_name=self.collection,
-                    points=sub_points
+                    points=points[j:j+BATCH_UPSERT]
                 )
 
     # ------------------------------------------------------
-    #               SEARCH PER TERREMOTI
+    # UNIVERSAL PARSER (ALWAYS RETURNS {"score":..., "event": dict})
+    # ------------------------------------------------------
+    def _parse_hits(self, hits):
+
+        parsed = []
+
+        for h in hits:
+
+            # ✅ Case 1: ScoredPoint
+            if hasattr(h, "payload"):
+                parsed.append({
+                    "score": getattr(h, "score", None),
+                    "event": h.payload
+                })
+                continue
+
+            # ✅ Case 2: Some versions return nested lists
+            if isinstance(h, list):
+                # Take the first element recursively
+                return self._parse_hits(h)
+
+            # ✅ Case 3: Tuple formats (old Qdrant)
+            if isinstance(h, tuple):
+                if len(h) == 3:
+                    _id, score, payload = h
+                elif len(h) == 2:
+                    score, payload = h
+                else:
+                    continue
+
+                # Ensure payload is dict (required by QA agent)
+                if isinstance(payload, list):
+                    # Some bizarre cases return payload wrapped in list
+                    if len(payload) > 0 and isinstance(payload[0], dict):
+                        payload = payload[0]
+
+                parsed.append({
+                    "score": score,
+                    "event": payload
+                })
+
+        return parsed
+
+    # ------------------------------------------------------
+    # Search similar events
     # ------------------------------------------------------
     def search_similar_events(self, query_event: dict, top_k=5):
         query_text = self._format_event_as_text(query_event)
         vec = self._embed_with_miniLM([query_text])[0]
 
-        hits = qdrant.search(
+        hits = qdrant.query_points(
             collection_name=self.collection,
-            query_vector=vec,
+            query=vec,
             limit=top_k,
-            append_payload=True
+            with_payload=True
         )
 
-        return [{"score": getattr(h, "score", None), "event": h.payload} for h in hits]
+        return self._parse_hits(hits.points if hasattr(hits, "points") else hits)
+
 
     # ------------------------------------------------------
-    #               SEARCH PER TESTO
+    # Semantic search
     # ------------------------------------------------------
     def semantic_search(self, text_query: str, top_k=5):
         vec = self._embed_with_miniLM([text_query])[0]
 
-        hits = qdrant.search(
+        hits = qdrant.query_points(
             collection_name=self.collection,
-            query_vector=vec,
+            query=vec,
             limit=top_k,
-            append_payload=True
+            with_payload=True
         )
 
-        return [{"score": getattr(h, "score", None), "event": h.payload} for h in hits]
+                
+            
+        return self._parse_hits(hits.points if hasattr(hits, "points") else hits)

@@ -10,7 +10,10 @@ QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 QDRANT_COLLECTION = os.getenv("QDRANT_COLLECTION")
 EMBEDDING_DIM = int(os.getenv("EMBEDDING_DIM"))
 
-qdrant = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
+if QDRANT_URL.startswith("http://"):
+    qdrant = QdrantClient(url=QDRANT_URL)
+else:
+    qdrant = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 
 # Cohere
 import cohere # type: ignore
